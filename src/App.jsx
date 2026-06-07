@@ -1117,107 +1117,16 @@ function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, sho
           })}
         </div>
       {/* HOURLY HEATMAP */}
-      {(() => {
-        const hours = Array.from({ length: 16 }, (_, i) => i + 7); // 7h-22h
-        const hourlyData = {};
-        hours.forEach(h => { hourlyData[h] = { count: 0, ca: 0 }; });
-        todayOrders.forEach(o => {
-          const h = new Date(o.time).getHours();
-          if (hourlyData[h]) { hourlyData[h].count++; hourlyData[h].ca += o.total; }
-        });
-        const maxCount = Math.max(...Object.values(hourlyData).map(h => h.count), 1);
-        return (
-          <div style={S.dashCard}>
-            <h3 style={S.dashCardTitle}>⏰ Activité par heure (aujourd&apos;hui)</h3>
-            <div style={{ display: "flex", gap: 4, alignItems: "flex-end", height: 80 }}>
-              {hours.map(h => {
-                const data = hourlyData[h];
-                const pct = data.count / maxCount;
-                const isHot = pct > 0.6;
-                const isMed = pct > 0.3;
-                return (
-                  <div key={h} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                    <div style={{ fontSize: 9, color: "#666" }}>{data.count > 0 ? data.count : ""}</div>
-                    <div style={{ width: "100%", background: isHot ? "#D4A843" : isMed ? "#8a6820" : "#2a2a2a", borderRadius: "3px 3px 0 0", height: `${Math.max(4, pct * 52)}px`, transition: "height 0.3s" }} />
-                    <div style={{ fontSize: 9, color: "#555" }}>{h}h</div>
-                  </div>
-                );
-              })}
-            </div>
-            {todayOrders.length === 0 && <div style={{ ...S.emptyState, paddingTop: 8 }}>Aucune commande aujourd&apos;hui</div>}
-          </div>
-        );
-      })()}
+      <HourlyHeatmap todayOrders={todayOrders} />
 
       {/* END OF SERVICE MODAL */}
-      {showEndOfService && (() => {
-        const cbTotal = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).reduce((s, o) => s + o.total, 0);
-        const cashTotal = todayOrders.filter(o => o.paymentMode === "Espèces").reduce((s, o) => s + o.total, 0);
-        const mixTotal = todayOrders.filter(o => o.paymentMode === "Mixte").reduce((s, o) => s + o.total, 0);
-        const sales = {};
-        todayOrders.forEach(o => o.items.forEach(i => { sales[i.name] = (sales[i.name] || 0) + i.qty; }));
-        const top3 = Object.entries(sales).sort((a, b) => b[1] - a[1]).slice(0, 3);
-        const peakHour = (() => {
-          const h = {}; todayOrders.forEach(o => { const hr = new Date(o.time).getHours(); h[hr] = (h[hr] || 0) + 1; });
-          const peak = Object.entries(h).sort((a, b) => b[1] - a[1])[0];
-          return peak ? `${peak[0]}h (${peak[1]} cmd)` : "—";
-        })();
-        return (
-          <div style={S.variantOverlay} onClick={() => setShowEndOfService(false)}>
-            <div style={{ ...S.variantModal, maxWidth: 480, maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
-              <div style={{ textAlign: "center", marginBottom: 20 }}>
-                <div style={{ fontSize: 32 }}>🌙</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#D4A843" }}>Récapitulatif de service</div>
-                <div style={{ fontSize: 12, color: "#888" }}>{new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</div>
-              </div>
-              {/* CA total */}
-              <div style={{ background: "#111", borderRadius: 10, padding: "16px 20px", marginBottom: 12, textAlign: "center" }}>
-                <div style={{ fontSize: 12, color: "#888" }}>CHIFFRE D&apos;AFFAIRES</div>
-                <div style={{ fontSize: 42, fontWeight: 700, color: "#D4A843" }}>{todayCA.toFixed(2)}€</div>
-                <div style={{ fontSize: 13, color: "#888" }}>{todayOrders.length} commandes • Ticket moyen {todayOrders.length ? (todayCA / todayOrders.length).toFixed(2) : "0.00"}€</div>
-              </div>
-              {/* Payment breakdown */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
-                <div style={{ background: "#0a1a2a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
-                  <div style={{ fontSize: 16 }}>💳</div>
-                  <div style={{ fontSize: 11, color: "#888" }}>CB</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#3b82f6" }}>{cbTotal.toFixed(2)}€</div>
-                </div>
-                <div style={{ background: "#0a2a1a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
-                  <div style={{ fontSize: 16 }}>💵</div>
-                  <div style={{ fontSize: 11, color: "#888" }}>Espèces</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#27ae60" }}>{cashTotal.toFixed(2)}€</div>
-                </div>
-                <div style={{ background: "#1a1a0a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
-                  <div style={{ fontSize: 16 }}>🔄</div>
-                  <div style={{ fontSize: 11, color: "#888" }}>Mixte</div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#D4A843" }}>{mixTotal.toFixed(2)}€</div>
-                </div>
-              </div>
-              {/* Top articles */}
-              <div style={{ background: "#111", borderRadius: 10, padding: "14px 16px", marginBottom: 12 }}>
-                <div style={{ fontSize: 12, color: "#888", marginBottom: 10 }}>🏆 TOP ARTICLES</div>
-                {top3.length === 0 && <div style={{ color: "#555", fontSize: 12 }}>Aucune vente</div>}
-                {top3.map(([name, qty], i) => (
-                  <div key={name} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid #1a1a1a", fontSize: 13 }}>
-                    <span>{["🥇","🥈","🥉"][i]} {name}</span>
-                    <span style={{ color: "#D4A843", fontWeight: 700 }}>{qty} vendus</span>
-                  </div>
-                ))}
-              </div>
-              {/* Peak hour */}
-              <div style={{ background: "#111", borderRadius: 10, padding: "14px 16px", marginBottom: 16, display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: "#888" }}>⏰ Heure de pointe</span>
-                <span style={{ fontWeight: 700, color: "#D4A843" }}>{peakHour}</span>
-              </div>
-              <div style={{ fontSize: 11, color: "#27ae60", textAlign: "center", marginBottom: 12 }}>
-                💵 Espèces à avoir dans le tiroir : <strong>{cashTotal.toFixed(2)}€</strong>
-              </div>
-              <button style={S.validateBtn} onClick={() => setShowEndOfService(false)}>✓ Fermer</button>
-            </div>
-          </div>
-        );
-      })()}
+      {showEndOfService && (
+        <EndOfServiceModal
+          todayOrders={todayOrders}
+          todayCA={todayCA}
+          onClose={() => setShowEndOfService(false)}
+        />
+      )}
     </div>
   );
 }
@@ -1901,27 +1810,7 @@ function SysConfigView({ orders }) {
       )}
 
       {/* Discount traceability */}
-      {(() => {
-        const discountOrders = periodOrders.filter(o => o.discount > 0);
-        if (discountOrders.length === 0) return null;
-        const totalDiscount = discountOrders.reduce((s, o) => s + (o.totalBeforeDiscount - o.total), 0);
-        return (
-          <div style={S.dashCard}>
-            <h3 style={S.dashCardTitle}>🎁 Remises accordées ({discountOrders.length}) — Total offert : {totalDiscount.toFixed(2)}€</h3>
-            {discountOrders.map(o => (
-              <div key={o.id} style={{ display: "flex", gap: 12, padding: "7px 0", borderBottom: "1px solid #222", fontSize: 12, alignItems: "center" }}>
-                <span style={{ color: "#D4A843", fontWeight: 700 }}>{o.id}</span>
-                <span style={{ color: "#888" }}>{new Date(o.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
-                <span style={{ color: "#f0ece4" }}>👤 {o.discountBy || o.user}</span>
-                <span style={{ color: "#e67e22" }}>{o.discountType === "fixed" ? `-${o.discount.toFixed(2)}€` : `-${o.discount}%`}</span>
-                <span style={{ color: "#888", textDecoration: "line-through" }}>{o.totalBeforeDiscount?.toFixed(2)}€</span>
-                <span style={{ color: "#27ae60", fontWeight: 700 }}>→ {o.total.toFixed(2)}€</span>
-                <span style={{ color: "#555", marginLeft: "auto" }}>{o.destination}</span>
-              </div>
-            ))}
-          </div>
-        );
-      })()}
+      <DiscountTrace periodOrders={periodOrders} />
 
       {/* Per employee order list */}
       {empList.length > 0 && (
@@ -2127,6 +2016,123 @@ function CategoriesManager({ categories, setCategories, menuItems, setMenuItems,
           );
         })}
       </div>
+    </div>
+  );
+}
+
+
+function HourlyHeatmap({ todayOrders }) {
+  const hours = Array.from({ length: 16 }, (_, i) => i + 7);
+  const hourlyData = {};
+  hours.forEach(h => { hourlyData[h] = { count: 0 }; });
+  todayOrders.forEach(o => {
+    const h = new Date(o.time).getHours();
+    if (hourlyData[h]) hourlyData[h].count++;
+  });
+  const maxCount = Math.max(...Object.values(hourlyData).map(h => h.count), 1);
+  return (
+    <div style={S.dashCard}>
+      <h3 style={S.dashCardTitle}>Activite par heure</h3>
+      <div style={{ display: "flex", gap: 4, alignItems: "flex-end", height: 80 }}>
+        {hours.map(h => {
+          const data = hourlyData[h];
+          const pct = data.count / maxCount;
+          const isHot = pct > 0.6;
+          const isMed = pct > 0.3;
+          return (
+            <div key={h} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+              <div style={{ fontSize: 9, color: "#666" }}>{data.count > 0 ? data.count : ""}</div>
+              <div style={{ width: "100%", background: isHot ? "#D4A843" : isMed ? "#8a6820" : "#2a2a2a", borderRadius: "3px 3px 0 0", height: `${Math.max(4, pct * 52)}px` }} />
+              <div style={{ fontSize: 9, color: "#555" }}>{h}h</div>
+            </div>
+          );
+        })}
+      </div>
+      {todayOrders.length === 0 && <div style={{ color: "#555", fontSize: 13, paddingTop: 8 }}>Aucune commande</div>}
+    </div>
+  );
+}
+
+function EndOfServiceModal({ todayOrders, todayCA, onClose }) {
+  const cbTotal = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).reduce((s, o) => s + o.total, 0);
+  const cashTotal = todayOrders.filter(o => o.paymentMode === "Especes").reduce((s, o) => s + o.total, 0);
+  const mixTotal = todayOrders.filter(o => o.paymentMode === "Mixte").reduce((s, o) => s + o.total, 0);
+  const sales = {};
+  todayOrders.forEach(o => o.items.forEach(i => { sales[i.name] = (sales[i.name] || 0) + i.qty; }));
+  const top3 = Object.entries(sales).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const h = {};
+  todayOrders.forEach(o => { const hr = new Date(o.time).getHours(); h[hr] = (h[hr] || 0) + 1; });
+  const peakEntry = Object.entries(h).sort((a, b) => b[1] - a[1])[0];
+  const peakHour = peakEntry ? peakEntry[0] + "h (" + peakEntry[1] + " cmd)" : "---";
+  return (
+    <div style={S.variantOverlay} onClick={onClose}>
+      <div style={{ ...S.variantModal, maxWidth: 480, maxHeight: "85vh", overflowY: "auto" }} onClick={e => e.stopPropagation()}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 32 }}>🌙</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#D4A843" }}>Recapitulatif de service</div>
+          <div style={{ fontSize: 12, color: "#888" }}>{new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</div>
+        </div>
+        <div style={{ background: "#111", borderRadius: 10, padding: "16px 20px", marginBottom: 12, textAlign: "center" }}>
+          <div style={{ fontSize: 12, color: "#888" }}>CHIFFRE D AFFAIRES</div>
+          <div style={{ fontSize: 42, fontWeight: 700, color: "#D4A843" }}>{todayCA.toFixed(2)}€</div>
+          <div style={{ fontSize: 13, color: "#888" }}>{todayOrders.length} commandes</div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
+          <div style={{ background: "#0a1a2a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
+            <div style={{ fontSize: 16 }}>💳</div>
+            <div style={{ fontSize: 11, color: "#888" }}>CB</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#3b82f6" }}>{cbTotal.toFixed(2)}€</div>
+          </div>
+          <div style={{ background: "#0a2a1a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
+            <div style={{ fontSize: 16 }}>💵</div>
+            <div style={{ fontSize: 11, color: "#888" }}>Especes</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#27ae60" }}>{cashTotal.toFixed(2)}€</div>
+          </div>
+          <div style={{ background: "#1a1a0a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
+            <div style={{ fontSize: 16 }}>🔄</div>
+            <div style={{ fontSize: 11, color: "#888" }}>Mixte</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#D4A843" }}>{mixTotal.toFixed(2)}€</div>
+          </div>
+        </div>
+        <div style={{ background: "#111", borderRadius: 10, padding: "14px 16px", marginBottom: 12 }}>
+          <div style={{ fontSize: 12, color: "#888", marginBottom: 10 }}>TOP ARTICLES</div>
+          {top3.length === 0 && <div style={{ color: "#555", fontSize: 12 }}>Aucune vente</div>}
+          {top3.map(([name, qty], i) => (
+            <div key={name} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid #1a1a1a", fontSize: 13 }}>
+              <span>{["🥇","🥈","🥉"][i]} {name}</span>
+              <span style={{ color: "#D4A843", fontWeight: 700 }}>{qty} vendus</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: "#111", borderRadius: 10, padding: "14px 16px", marginBottom: 16, display: "flex", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 13, color: "#888" }}>Heure de pointe</span>
+          <span style={{ fontWeight: 700, color: "#D4A843" }}>{peakHour}</span>
+        </div>
+        <div style={{ fontSize: 11, color: "#27ae60", textAlign: "center", marginBottom: 12 }}>
+          Especes a avoir dans le tiroir : <strong>{cashTotal.toFixed(2)}€</strong>
+        </div>
+        <button style={S.validateBtn} onClick={onClose}>Fermer</button>
+      </div>
+    </div>
+  );
+}
+
+function DiscountTrace({ periodOrders }) {
+  const discountOrders = periodOrders.filter(o => o.discount > 0);
+  if (discountOrders.length === 0) return null;
+  const totalDiscount = discountOrders.reduce((s, o) => s + ((o.totalBeforeDiscount || o.total) - o.total), 0);
+  return (
+    <div style={S.dashCard}>
+      <h3 style={S.dashCardTitle}>Remises accordees ({discountOrders.length}) — Total offert : {totalDiscount.toFixed(2)}€</h3>
+      {discountOrders.map(o => (
+        <div key={o.id} style={{ display: "flex", gap: 12, padding: "7px 0", borderBottom: "1px solid #222", fontSize: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ color: "#D4A843", fontWeight: 700 }}>{o.id}</span>
+          <span style={{ color: "#888" }}>{new Date(o.time).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</span>
+          <span style={{ color: "#f0ece4" }}>👤 {o.discountBy || o.user}</span>
+          <span style={{ color: "#e67e22" }}>{o.discountType === "fixed" ? "-" + o.discount.toFixed(2) + "€" : "-" + o.discount + "%"}</span>
+          <span style={{ color: "#27ae60", fontWeight: 700 }}>{o.total.toFixed(2)}€</span>
+        </div>
+      ))}
     </div>
   );
 }
