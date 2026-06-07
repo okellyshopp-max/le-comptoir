@@ -1530,6 +1530,7 @@ function SysConfigView({ orders }) {
   const [pinError, setPinError] = useState(false);
   const [period, setPeriod] = useState("today");
   const [consoleLines, setConsoleLines] = useState([]);
+  const [consoleReady, setConsoleReady] = useState(false);
 
   const tryUnlock = () => {
     if (pinInput === OWNER_PIN) {
@@ -1615,14 +1616,14 @@ function SysConfigView({ orders }) {
             {consoleLines.map((l, i) => (
               <div key={i} style={{ color: l.c, fontFamily: "monospace", fontSize: 12, lineHeight: 1.7 }}>{l.tx}</div>
             ))}
-            {consoleLines.length < 9 && (
+            {!consoleReady && (
               <span style={{ display: "inline-block", width: 8, height: 14, background: "#27ae60", marginTop: 4, animation: "none" }}>█</span>
             )}
           </div>
         </div>
 
         {/* Fake module grid */}
-        {consoleLines.length >= 9 && (
+        {consoleReady && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div style={{ fontSize: 12, color: "#666", letterSpacing: 1, textTransform: "uppercase" }}>Modules de configuration disponibles</div>
             <div style={S.fakeModuleGrid}>
@@ -1715,7 +1716,7 @@ function SysConfigView({ orders }) {
               onClick={() => setPeriod(p.k)}>{p.l}</button>
           ))}
           <button style={{ ...S.logoutBtn, marginLeft: 8 }} onClick={() => { setStage("fakeconsole"); }}>← Retour config</button>
-          <button style={{ ...S.logoutBtn }} onClick={() => { setStage("pin"); setPinInput(""); setConsoleLines([]); }}>🔒 Verrouiller</button>
+          <button style={{ ...S.logoutBtn }} onClick={() => { setStage("pin"); setPinInput(""); setConsoleLines([]); setConsoleReady(false); }}>🔒 Verrouiller</button>
         </div>
       </div>
 
