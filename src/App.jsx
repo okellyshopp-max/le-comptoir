@@ -1190,22 +1190,22 @@ function SettingsView({ menuItems, setMenuItems, formules, setFormules, categori
           <h3 style={S.addFormTitle}>Nouvel article</h3>
           <div style={S.addFormGrid}>
             <div style={S.formField}><label style={S.formLabel}>Emoji</label>
-              <select style={S.formInput} value={newItem.emoji} onChange={e => setNewItem(p => ({ ...p, emoji: e.target.value }))}>
+              <select style={S.formInput} value={newItem.emoji} onChange={e => { const v = e.target.value; setNewItem(p => ({ ...p, emoji: v })); }}>
                 {EMOJIS.map(em => <option key={em} value={em}>{em}</option>)}
               </select></div>
             <div style={{ ...S.formField, flex: 2 }}><label style={S.formLabel}>Nom *</label>
-              <input style={S.formInput} placeholder="Ex: Smash Triple" value={newItem.name} onChange={e => setNewItem(p => ({ ...p, name: e.target.value }))} /></div>
+              <input style={S.formInput} placeholder="Ex: Smash Triple" value={newItem.name} onChange={e => { const v = e.target.value; setNewItem(p => ({ ...p, name: v })); }} /></div>
             <div style={S.formField}><label style={S.formLabel}>Catégorie</label>
-              <select style={S.formInput} value={newItem.cat} onChange={e => setNewItem(p => ({ ...p, cat: e.target.value }))}>
+              <select style={S.formInput} value={newItem.cat} onChange={e => { const v = e.target.value; setNewItem(p => ({ ...p, cat: v })); }}>
                 {categories.map(c => <option key={c}>{c}</option>)}</select></div>
             <div style={S.formField}><label style={S.formLabel}>Prix (€) *</label>
-              <input style={S.formInput} type="number" min="0" step="0.5" placeholder="0.00" value={newItem.price} onChange={e => setNewItem(p => ({ ...p, price: e.target.value }))} /></div>
+              <input style={S.formInput} type="number" min="0" step="0.5" placeholder="0.00" value={newItem.price} onChange={e => { const v = e.target.value; setNewItem(p => ({ ...p, price: v })); }} /></div>
             <div style={S.formField}><label style={S.formLabel}>Stock initial</label>
               <input style={S.formInput} type="number" min="0" value={newItem.stock} onChange={e => setNewItem(p => ({ ...p, stock: parseInt(e.target.value) || 0 }))} /></div>
             <div style={S.formField}><label style={S.formLabel}>Seuil alerte</label>
               <input style={S.formInput} type="number" min="0" value={newItem.threshold} onChange={e => setNewItem(p => ({ ...p, threshold: parseInt(e.target.value) || 0 }))} /></div>
             <div style={S.formField}><label style={S.formLabel}>Unité</label>
-              <input style={S.formInput} placeholder="portions" value={newItem.unit} onChange={e => setNewItem(p => ({ ...p, unit: e.target.value }))} /></div>
+              <input style={S.formInput} placeholder="portions" value={newItem.unit} onChange={e => { const v = e.target.value; setNewItem(p => ({ ...p, unit: v })); }} /></div>
           </div>
           <button style={S.saveNewBtn} onClick={addItem}>✓ Ajouter l&apos;article</button>
         </div>
@@ -1217,14 +1217,23 @@ function SettingsView({ menuItems, setMenuItems, formules, setFormules, categori
           <h3 style={S.addFormTitle}>Nouvelle formule</h3>
           <div style={S.addFormGrid}>
             <div style={S.formField}><label style={S.formLabel}>Emoji</label>
-              <select style={S.formInput} value={newFormule.emoji} onChange={e => setNewFormule(p => ({ ...p, emoji: e.target.value }))}>
+              <select style={S.formInput} value={newFormule.emoji} onChange={e => { const v = e.target.value; setNewFormule(p => ({ ...p, emoji: v })); }}>
                 {EMOJIS.map(em => <option key={em} value={em}>{em}</option>)}</select></div>
-            <div style={{ ...S.formField, flex: 2 }}><label style={S.formLabel}>Nom *</label>
-              <input style={S.formInput} placeholder="Ex: Formule Midi" value={newFormule.name} onChange={e => setNewFormule(p => ({ ...p, name: e.target.value }))} /></div>
-            <div style={S.formField}><label style={S.formLabel}>Prix formule (€) *</label>
-              <input style={S.formInput} type="number" min="0" step="0.5" placeholder="0.00" value={newFormule.price} onChange={e => setNewFormule(p => ({ ...p, price: e.target.value }))} /></div>
-            <div style={{ ...S.formField, flex: 2 }}><label style={S.formLabel}>Description</label>
-              <input style={S.formInput} placeholder="Ex: Burger + Frites + Boisson" value={newFormule.description} onChange={e => setNewFormule(p => ({ ...p, description: e.target.value }))} /></div>
+            <div style={{ ...S.formField, flex: 2 }}>
+              <label style={S.formLabel}>Nom *</label>
+              <input style={S.formInput} placeholder="Ex: Formule Midi" value={newFormule.name}
+                onChange={e => { const v = e.target.value; setNewFormule(p => ({ ...p, name: v })); }} />
+            </div>
+            <div style={S.formField}>
+              <label style={S.formLabel}>Prix formule (€) *</label>
+              <input style={S.formInput} type="number" min="0" step="0.5" placeholder="0.00" value={newFormule.price}
+                onChange={e => { const v = e.target.value; setNewFormule(p => ({ ...p, price: v })); }} />
+            </div>
+            <div style={{ ...S.formField, flex: 2 }}>
+              <label style={S.formLabel}>Description</label>
+              <input style={S.formInput} placeholder="Ex: Burger + Frites + Boisson" value={newFormule.description}
+                onChange={e => { const v = e.target.value; setNewFormule(p => ({ ...p, description: v })); }} />
+            </div>
           </div>
           <button style={S.saveNewBtn} onClick={addFormule}>✓ Ajouter la formule</button>
         </div>
@@ -1245,12 +1254,12 @@ function SettingsView({ menuItems, setMenuItems, formules, setFormules, categori
                 <div key={item.id} style={{ ...S.settingsRow, ...(isInactive ? S.settingsRowInactive : {}) }}>
                   {isEditing ? (
                     <div style={S.editRowMain}>
-                      <select style={{ ...S.editInput, width: 55 }} value={editData.emoji} onChange={e => setEditData(p => ({ ...p, emoji: e.target.value }))}>
+                      <select style={{ ...S.editInput, width: 55 }} value={editData.emoji} onChange={e => { const v = e.target.value; setEditData(p => ({ ...p, emoji: v })); }}>
                         {EMOJIS.map(em => <option key={em} value={em}>{em}</option>)}</select>
-                      <input style={{ ...S.editInput, flex: 2 }} value={editData.name} onChange={e => setEditData(p => ({ ...p, name: e.target.value }))} />
-                      <select style={S.editInput} value={editData.cat} onChange={e => setEditData(p => ({ ...p, cat: e.target.value }))}>
+                      <input style={{ ...S.editInput, flex: 2 }} value={editData.name} onChange={e => { const v = e.target.value; setEditData(p => ({ ...p, name: v })); }} />
+                      <select style={S.editInput} value={editData.cat} onChange={e => { const v = e.target.value; setEditData(p => ({ ...p, cat: v })); }}>
                         {categories.map(c => <option key={c}>{c}</option>)}</select>
-                      <input style={{ ...S.editInput, width: 75 }} type="number" min="0" step="0.5" value={editData.price} onChange={e => setEditData(p => ({ ...p, price: e.target.value }))} />
+                      <input style={{ ...S.editInput, width: 75 }} type="number" min="0" step="0.5" value={editData.price} onChange={e => { const v = e.target.value; setEditData(p => ({ ...p, price: v })); }} />
                       <input style={{ ...S.editInput, width: 65 }} type="number" min="0" value={editData.threshold} onChange={e => setEditData(p => ({ ...p, threshold: parseInt(e.target.value) || 0 }))} />
                       <div style={S.editActions}>
                         <button style={{ ...S.actionBtn, background: "#27ae60" }} onClick={saveEdit}>✓ Sauver</button>
