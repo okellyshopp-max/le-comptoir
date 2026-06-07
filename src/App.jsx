@@ -1082,6 +1082,7 @@ function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, sho
             );
           })}
         </div>
+      </div>
       {/* HOURLY HEATMAP */}
       <HourlyHeatmap todayOrders={todayOrders} />
 
