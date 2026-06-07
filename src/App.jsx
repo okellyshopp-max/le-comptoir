@@ -1548,10 +1548,18 @@ function SysConfigView({ orders }) {
         { t: 2200, c: "#888",    tx: "  Session token refreshed. exp: +3600s" },
         { t: 2500, c: "#27ae60", tx: "✔ System ready. Select a configuration module below." },
       ];
-      setConsoleLines([]);
-      lines.forEach(({ t, c, tx }) => {
-        setTimeout(() => setConsoleLines(prev => [...prev, { c, tx }]), t);
-      });
+      setConsoleLines([
+        { c: "#27ae60", tx: "Initializing system config daemon v2.4.1..." },
+        { c: "#888",    tx: "  Loading /etc/app/config.json ... OK" },
+        { c: "#888",    tx: "  Mounting persistent storage ... OK" },
+        { c: "#888",    tx: "  Checking DB connection pool [max:20] ... CONNECTED" },
+        { c: "#e67e22", tx: "  WARN: cache TTL mismatch detected (redis != local)" },
+        { c: "#888",    tx: "  Resyncing worker threads [4/4] ........... OK" },
+        { c: "#3b82f6", tx: "  API gateway heartbeat: 42ms latency avg" },
+        { c: "#888",    tx: "  Session token refreshed. exp: +3600s" },
+        { c: "#27ae60", tx: "System ready. Select a configuration module below." },
+      ]);
+      setConsoleReady(true);
     } else {
       setPinError(true);
       setPinInput("");
