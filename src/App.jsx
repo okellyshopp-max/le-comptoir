@@ -1021,41 +1021,7 @@ function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, sho
         <div style={{ ...S.kpiCard, ...(lowStock > 0 ? S.kpiCardWarn : {}) }}><span style={S.kpiLabel}>Alertes stock</span><span style={S.kpiValue}>{lowStock}</span></div>
       </div>
 
-      {/* CLÔTURE DE CAISSE */}
-      {(() => {
-        const cbTotal = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).reduce((s, o) => s + o.total, 0);
-        const cashTotal = todayOrders.filter(o => o.paymentMode === "Espèces").reduce((s, o) => s + o.total, 0);
-        const mixTotal = todayOrders.filter(o => o.paymentMode === "Mixte").reduce((s, o) => s + o.total, 0);
-        const cbCount = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).length;
-        const cashCount = todayOrders.filter(o => o.paymentMode === "Espèces").length;
-        const mixCount = todayOrders.filter(o => o.paymentMode === "Mixte").length;
-        return (
-          <div style={{ background: "#1e1e1e", border: "1px solid #333", borderRadius: 12, padding: "18px 20px" }}>
-            <h3 style={{ ...S.dashCardTitle, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span>💰 Clôture de caisse</span>
-              <span style={{ fontSize: 12, color: "#888", fontWeight: 400 }}>Espèces attendues dans le tiroir</span>
-            </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-              <div style={{ background: "#0a1a2a", border: "1px solid #1e3a5a", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 18 }}>💳</span>
-                <span style={{ fontSize: 12, color: "#888" }}>CB — {cbCount} cmd</span>
-                <span style={{ fontSize: 22, fontWeight: 700, color: "#3b82f6" }}>{cbTotal.toFixed(2)}€</span>
-              </div>
-              <div style={{ background: "#0a2a1a", border: "1px solid #1a5a3a", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 18 }}>💵</span>
-                <span style={{ fontSize: 12, color: "#888" }}>Espèces — {cashCount} cmd</span>
-                <span style={{ fontSize: 22, fontWeight: 700, color: "#27ae60" }}>{cashTotal.toFixed(2)}€</span>
-                <span style={{ fontSize: 11, color: "#27ae60", background: "#0a3a1a", borderRadius: 4, padding: "2px 6px", marginTop: 2 }}>À avoir en caisse</span>
-              </div>
-              <div style={{ background: "#1a1a0a", border: "1px solid #3a3a1a", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
-                <span style={{ fontSize: 18 }}>🔄</span>
-                <span style={{ fontSize: 12, color: "#888" }}>Mixte — {mixCount} cmd</span>
-                <span style={{ fontSize: 22, fontWeight: 700, color: "#D4A843" }}>{mixTotal.toFixed(2)}€</span>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      <ClotureCaisse todayOrders={todayOrders} />
       <div style={S.dashRow}>
         <div style={S.dashCard}>
           <h3 style={S.dashCardTitle}>🏆 Articles les plus vendus</h3>
@@ -2029,6 +1995,42 @@ function CategoriesManager({ categories, setCategories, menuItems, setMenuItems,
   );
 }
 
+
+
+function ClotureCaisse({ todayOrders }) {
+  const cbTotal = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).reduce((s, o) => s + o.total, 0);
+  const cashTotal = todayOrders.filter(o => o.paymentMode === "Especes").reduce((s, o) => s + o.total, 0);
+  const mixTotal = todayOrders.filter(o => o.paymentMode === "Mixte").reduce((s, o) => s + o.total, 0);
+  const cbCount = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).length;
+  const cashCount = todayOrders.filter(o => o.paymentMode === "Especes").length;
+  const mixCount = todayOrders.filter(o => o.paymentMode === "Mixte").length;
+  return (
+    <div style={{ background: "#1e1e1e", border: "1px solid #333", borderRadius: 12, padding: "18px 20px" }}>
+      <h3 style={{ ...S.dashCardTitle, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span>Cloture de caisse</span>
+        <span style={{ fontSize: 12, color: "#888", fontWeight: 400 }}>Especes attendues dans le tiroir</span>
+      </h3>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+        <div style={{ background: "#0a1a2a", border: "1px solid #1e3a5a", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+          <span style={{ fontSize: 18 }}>💳</span>
+          <span style={{ fontSize: 12, color: "#888" }}>CB — {cbCount} cmd</span>
+          <span style={{ fontSize: 22, fontWeight: 700, color: "#3b82f6" }}>{cbTotal.toFixed(2)}€</span>
+        </div>
+        <div style={{ background: "#0a2a1a", border: "1px solid #1a5a3a", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+          <span style={{ fontSize: 18 }}>💵</span>
+          <span style={{ fontSize: 12, color: "#888" }}>Especes — {cashCount} cmd</span>
+          <span style={{ fontSize: 22, fontWeight: 700, color: "#27ae60" }}>{cashTotal.toFixed(2)}€</span>
+          <span style={{ fontSize: 11, color: "#27ae60", background: "#0a3a1a", borderRadius: 4, padding: "2px 6px", marginTop: 2 }}>A avoir en caisse</span>
+        </div>
+        <div style={{ background: "#1a1a0a", border: "1px solid #3a3a1a", borderRadius: 10, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 4 }}>
+          <span style={{ fontSize: 18 }}>🔄</span>
+          <span style={{ fontSize: 12, color: "#888" }}>Mixte — {mixCount} cmd</span>
+          <span style={{ fontSize: 22, fontWeight: 700, color: "#D4A843" }}>{mixTotal.toFixed(2)}€</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function HourlyHeatmap({ todayOrders }) {
   const hours = Array.from({ length: 16 }, (_, i) => i + 7);
