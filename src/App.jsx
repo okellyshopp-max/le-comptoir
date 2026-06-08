@@ -24,7 +24,7 @@ const T = {
     enRoute: "En route", termine: "Terminé", annuler: "Annuler",
     encaisser: "💰 Encaisser", encaissement: "💰 Encaissement",
     confirmerEncaissement: "✓ Confirmer l'encaissement",
-    aucuneCommande: "{t ? t.aucuneCommande : "Aucune commande en cours"}",
+    aucuneCommande: "Aucune commande en cours — tranquille 😎",
     // Payment
     cb: "Carte bancaire", especes: "Espèces", mixte: "Mixte CB + Espèces",
     modePaiement: "Mode de paiement",
