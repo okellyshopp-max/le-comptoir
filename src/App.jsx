@@ -1,5 +1,98 @@
 import { useState, useEffect, useRef } from "react";
 
+const T = {
+  fr: {
+    // Nav
+    caisse: "🧾 Caisse", cuisine: "👨‍🍳 Cuisine", stocks: "📦 Stocks",
+    dashboard: "📊 Dashboard", menuPrix: "⚙️ Menu & Prix", sysconfig: "🔧 Config. Système",
+    // Login
+    loginTitle: "Qui êtes-vous ?", loginChoose: "Choisissez votre prénom",
+    loginOr: "Ou tapez votre prénom...", loginPoste: "Poste du jour",
+    loginBtn: "→ Commencer",
+    roles: { Caisse: "🧾 Caisse", Cuisine: "👨‍🍳 Cuisine", Service: "🍽️ Service" },
+    // Order modes
+    comptoir: "Comptoir", table: "Table", emporter: "A emporter", livraison: "Livraison",
+    tableNo: "Table n°", autreTable: "Autre",
+    clientNom: "Nom du client *", adresse: "Adresse de livraison *",
+    telephone: "Téléphone (optionnel)", remarques: "Remarques (code porte, étage, instructions...)",
+    // Cart
+    commande: "Commande", envoyerCuisine: "✓ ENVOYER EN CUISINE",
+    viderCommande: "Vider la commande", remise: "🎁 Remise", total: "TOTAL",
+    // Kitchen
+    enCours: "🔥 En cours", termineesRecentes: "✓ Terminées récentes",
+    enPreparation: "En préparation", pret: "Prêt", servi: "Servi",
+    enRoute: "En route", termine: "Terminé", annuler: "Annuler",
+    encaisser: "💰 Encaisser", encaissement: "💰 Encaissement",
+    confirmerEncaissement: "✓ Confirmer l'encaissement",
+    aucuneCommande: "{t ? t.aucuneCommande : "Aucune commande en cours"}",
+    // Payment
+    cb: "Carte bancaire", especes: "Espèces", mixte: "Mixte CB + Espèces",
+    modePaiement: "Mode de paiement",
+    // Stock
+    stockBas: "⚠️ Stock bas", rupture: "RUPTURE", ok: "OK", bas: "BAS",
+    reaappro: "Réappro", ajouter: "+ Ajouter", quantite: "Qté",
+    // Dashboard
+    caJour: "CA du jour", commandes: "Commandes", ticketMoyen: "Ticket moyen",
+    alertesStock: "Alertes stock", clotureCaisse: "Clôture de caisse",
+    clotureSub: "Espèces attendues dans le tiroir",
+    repartitionMode: "Répartition par mode", activiteHeure: "Activité par heure",
+    cloturService: "🌙 Clôture de service",
+    // Settings
+    articles: "Articles", formules: "Formules", categories: "Catégories", equipe: "👥 Équipe",
+    ajouterArticle: "+ Ajouter un article", ajouterFormule: "+ Ajouter une formule",
+    modifier: "✏️ Modifier", supprimer: "🗑️", actif: "✓ Actif", inactif: "⏸ Inactif",
+    sauver: "✓ Sauver", annulerBtn: "✕ Annuler",
+    // Misc
+    changer: "Changer", surPlace: "Sur place", messagesCuisine: "📢 Message cuisine",
+    envoyer: "Envoyer", passer: "Passer",
+  },
+  es: {
+    // Nav
+    caisse: "🧾 Caja", cuisine: "👨‍🍳 Cocina", stocks: "📦 Stock",
+    dashboard: "📊 Panel", menuPrix: "⚙️ Menú & Precios", sysconfig: "🔧 Config. Sistema",
+    // Login
+    loginTitle: "¿Quién eres?", loginChoose: "Elige tu nombre",
+    loginOr: "O escribe tu nombre...", loginPoste: "Puesto de hoy",
+    loginBtn: "→ Empezar",
+    roles: { Caisse: "🧾 Caja", Cuisine: "👨‍🍳 Cocina", Service: "🍽️ Servicio" },
+    // Order modes
+    comptoir: "Mostrador", table: "Mesa", emporter: "Para llevar", livraison: "Domicilio",
+    tableNo: "Mesa n°", autreTable: "Otra",
+    clientNom: "Nombre del cliente *", adresse: "Dirección de entrega *",
+    telephone: "Teléfono (opcional)", remarques: "Notas (código puerta, piso, instrucciones...)",
+    // Cart
+    commande: "Pedido", envoyerCuisine: "✓ ENVIAR A COCINA",
+    viderCommande: "Vaciar pedido", remise: "🎁 Descuento", total: "TOTAL",
+    // Kitchen
+    enCours: "🔥 En curso", termineesRecentes: "✓ Completados recientes",
+    enPreparation: "En preparación", pret: "Listo", servi: "Servido",
+    enRoute: "En camino", termine: "Completado", annuler: "Cancelar",
+    encaisser: "💰 Cobrar", encaissement: "💰 Cobro",
+    confirmerEncaissement: "✓ Confirmar cobro",
+    aucuneCommande: "Sin pedidos en curso — tranquilo 😎",
+    // Payment
+    cb: "Tarjeta bancaria", especes: "Efectivo", mixte: "Mixto Tarjeta + Efectivo",
+    modePaiement: "Forma de pago",
+    // Stock
+    stockBas: "⚠️ Stock bajo", rupture: "AGOTADO", ok: "OK", bas: "BAJO",
+    reaappro: "Reponer", ajouter: "+ Añadir", quantite: "Cant.",
+    // Dashboard
+    caJour: "Ventas del día", commandes: "Pedidos", ticketMoyen: "Ticket medio",
+    alertesStock: "Alertas stock", clotureCaisse: "Cierre de caja",
+    clotureSub: "Efectivo esperado en caja",
+    repartitionMode: "Reparto por modo", activiteHeure: "Actividad por hora",
+    cloturService: "🌙 Cierre de servicio",
+    // Settings
+    articles: "Artículos", formules: "Menús", categories: "Categorías", equipe: "👥 Equipo",
+    ajouterArticle: "+ Añadir artículo", ajouterFormule: "+ Añadir menú",
+    modifier: "✏️ Editar", supprimer: "🗑️", actif: "✓ Activo", inactif: "⏸ Inactivo",
+    sauver: "✓ Guardar", annulerBtn: "✕ Cancelar",
+    // Misc
+    changer: "Cambiar", surPlace: "En local", messagesCuisine: "📢 Mensaje cocina",
+    envoyer: "Enviar", passer: "Omitir",
+  }
+};
+
 const INITIAL_CATEGORIES = ["Burgers", "Sandwichs", "Bistrot", "Boissons", "Desserts", "Extras"];
 
 const INITIAL_MENU = [
@@ -71,6 +164,7 @@ function fmtElapsed(secs) {
 
 export default function App() {
   const [employees, setEmployees] = useState(INITIAL_EMPLOYEES);
+  const [lang, setLang] = useState("es"); // es by default
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [view, setView] = useState("pos");
@@ -99,6 +193,7 @@ export default function App() {
   const [notification, setNotification] = useState(null);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
+  const t = T[lang];
   const lowStockItems = menuItems.filter(i => i.stock <= i.threshold);
   const pendingKitchen = orders.filter(o => o.status === "En préparation").length;
   const unreadMessages = kitchenMessages.filter(m => !m.read).length;
@@ -213,7 +308,7 @@ export default function App() {
   const avgTicket = todayOrders.length ? todayCA / todayOrders.length : 0;
 
   if (!loggedIn) {
-    return <LoginScreen employees={employees} onLogin={(name) => { setCurrentUser(name); setLoggedIn(true); }} />;
+    return <LoginScreen employees={employees} lang={lang} setLang={setLang} onLogin={(name) => { setCurrentUser(name); setLoggedIn(true); }} />;
   }
 
   return (
@@ -246,12 +341,13 @@ export default function App() {
         </div>
         <nav style={S.nav}>
           {[
-            { key: "pos", label: "🧾 Caisse" },
-            { key: "kitchen", label: "👨‍🍳 Cuisine" },
-            { key: "stock", label: "📦 Stocks" },
-            { key: "dashboard", label: "📊 Dashboard" },
-            { key: "settings", label: "⚙️ Menu & Prix" },
-            ...(employees.find(e => e.name === currentUser && e.isOwner) ? [{ key: "sysconfig", label: "🔧 Config. Système" }] : []),
+            { key: "pos", label: t.caisse },
+            { key: "kitchen", label: t.cuisine },
+            { key: "stock", label: t.stocks },
+            { key: "dashboard", label: t.dashboard },
+            { key: "settings", label: t.menuPrix },
+            ...(employees.find(e => e.name === currentUser && e.isOwner) ? [{ key: "sysconfig", label: t.sysconfig }] : []),
+
           ].map(v => (
             <button key={v.key} style={{ ...S.navBtn, ...(view === v.key ? S.navBtnActive : {}) }}
               onClick={() => setView(v.key)}>
@@ -263,8 +359,11 @@ export default function App() {
           ))}
         </nav>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button style={{ ...S.logoutBtn, fontSize: 16, padding: "3px 8px" }} onClick={() => setLang(l => l === "fr" ? "es" : "fr")}>
+            {lang === "fr" ? "🇪🇸" : "🇫🇷"}
+          </button>
           <span style={{ color: "#D4A843", fontSize: 13 }}>👤 {currentUser}</span>
-          <button style={S.logoutBtn} onClick={() => { setLoggedIn(false); setCurrentUser(""); setCart([]); }}>Changer</button>
+          <button style={S.logoutBtn} onClick={() => { setLoggedIn(false); setCurrentUser(""); setCart([]); }}>{t.changer}</button>
         </div>
       </header>
 
@@ -273,6 +372,7 @@ export default function App() {
           categories={categories}
           kitchenMessages={kitchenMessages} setKitchenMessages={setKitchenMessages}
           setMenuItems={setMenuItems}
+          t={t}
           activeCat={activeCat} setActiveCat={setActiveCat} addToCart={addToCart}
           addFormuleToCart={addFormuleToCart} removeFromCart={removeFromCart}
           updateQty={updateQty} updateNote={updateNote} cartTotal={cartTotal}
@@ -294,15 +394,15 @@ export default function App() {
           encaisserModal={encaisserModal} setEncaisserModal={setEncaisserModal}
           encaisserMode={encaisserMode} setEncaisserMode={setEncaisserMode}
           encaisserOrder={encaisserOrder}
-          kitchenMessages={kitchenMessages} setKitchenMessages={setKitchenMessages} />}
-        {view === "stock" && <StockView menuItems={menuItems} setMenuItems={setMenuItems} categories={categories} notify={notify} />}
+          kitchenMessages={kitchenMessages} setKitchenMessages={setKitchenMessages} t={t} />}
+        {view === "stock" && <StockView menuItems={menuItems} setMenuItems={setMenuItems} categories={categories} notify={notify} t={t} />}
         {view === "dashboard" && <DashboardView orders={orders} todayOrders={todayOrders}
           todayCA={todayCA} avgTicket={avgTicket} menuItems={menuItems}
-          showEndOfService={showEndOfService} setShowEndOfService={setShowEndOfService} />}
+          showEndOfService={showEndOfService} setShowEndOfService={setShowEndOfService} t={t} />}
         {view === "settings" && <SettingsView menuItems={menuItems} setMenuItems={setMenuItems}
           formules={formules} setFormules={setFormules}
           categories={categories} setCategories={setCategories}
-          employees={employees} setEmployees={setEmployees} notify={notify} />}
+          employees={employees} setEmployees={setEmployees} notify={notify} t={t} />}
         {view === "sysconfig" && employees.find(e => e.name === currentUser && e.isOwner) && <SysConfigView orders={orders} />}
       </main>
     </div>
@@ -317,7 +417,7 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
   discount, setDiscount, discountType, setDiscountType,
   discountPending, setDiscountPending,
   managerPinModal, setManagerPinModal, managerPinInput, setManagerPinInput, managerPinError, setManagerPinError,
-  kitchenMessages, setKitchenMessages, setMenuItems,
+  kitchenMessages, setKitchenMessages, setMenuItems, t,
   currentUser }) {
   const [showKitchenMsg, setShowKitchenMsg] = useState(false);
   const [kitchenMsgText, setKitchenMsgText] = useState("");
@@ -366,7 +466,7 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
                   setKitchenMessages(prev => [{ id: Date.now(), text: kitchenMsgText.trim(), time: new Date(), from: currentUser, read: false }, ...prev]);
                   setKitchenMsgText(""); setShowKitchenMsg(false);
                 }
-              }}>Envoyer</button>
+              }}>{t.envoyer}</button>
               <button style={{ ...S.clearBtn, width: "auto", padding: "5px 10px" }} onClick={() => setShowKitchenMsg(false)}>✕</button>
             </div>
           )}
@@ -410,26 +510,26 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
       <div style={S.posRight}>
         <div style={S.cartHeader}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <span style={S.cartTitle}>Commande</span>
+            <span style={S.cartTitle}>{t.commande}</span>
             <span style={{ fontSize: 11, color: "#D4A843" }}>👤 {currentUser}</span>
           </div>
           <div style={S.orderModeBtns}>
             {[
-              { key: "Comptoir", icon: "🏪" },
-              { key: "Table", icon: "🪑" },
-              { key: "A emporter", icon: "🥡" },
-              { key: "Livraison", icon: "🛵" },
+              { key: "Comptoir", icon: "🏪", label: t.comptoir },
+              { key: "Table", icon: "🪑", label: t.table },
+              { key: "A emporter", icon: "🥡", label: t.emporter },
+              { key: "Livraison", icon: "🛵", label: t.livraison },
             ].map(m => (
               <button key={m.key}
                 style={{ ...S.orderModeBtn, ...(orderMode === m.key ? S.orderModeBtnActive : {}) }}
                 onClick={() => setOrderMode(m.key)}>
-                {m.icon} {m.key}
+                {m.icon} {m.label || m.key}
               </button>
             ))}
           </div>
           {orderMode === "Table" && (
             <div style={{ marginTop: 8, display: "flex", gap: 6, alignItems: "center" }}>
-              <span style={{ fontSize: 12, color: "#999" }}>Table n°</span>
+              <span style={{ fontSize: 12, color: "#999" }}>{t.tableNo}</span>
               <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                 {[1,2,3,4,5,6,7,8,9,10].map(n => (
                   <button key={n}
@@ -443,10 +543,10 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
           )}
           {orderMode === "Livraison" && (
             <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
-              <input style={S.deliveryInput} placeholder="Nom du client *" value={deliveryName} onChange={e => setDeliveryName(e.target.value)} />
-              <input style={S.deliveryInput} placeholder="Adresse de livraison *" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} />
-              <input style={S.deliveryInput} placeholder="Téléphone (optionnel)" value={deliveryPhone} onChange={e => setDeliveryPhone(e.target.value)} />
-              <textarea style={{ ...S.deliveryInput, resize: "none", minHeight: 52 }} placeholder="Remarques (code porte, étage, instructions...)" value={deliveryRemarks} onChange={e => setDeliveryRemarks(e.target.value)} />
+              <input style={S.deliveryInput} placeholder={t.clientNom} value={deliveryName} onChange={e => setDeliveryName(e.target.value)} />
+              <input style={S.deliveryInput} placeholder={t.adresse} value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} />
+              <input style={S.deliveryInput} placeholder={t.telephone} value={deliveryPhone} onChange={e => setDeliveryPhone(e.target.value)} />
+              <textarea style={{ ...S.deliveryInput, resize: "none", minHeight: 52 }} placeholder={t.remarques} value={deliveryRemarks} onChange={e => setDeliveryRemarks(e.target.value)} />
             </div>
           )}
         </div>
@@ -488,7 +588,7 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
           {/* DISCOUNT */}
           <div style={{ marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: "#999" }}>🎁 Remise</span>
+              <span style={{ fontSize: 12, color: "#999" }}>{t.remise}</span>
               <div style={{ display: "flex", gap: 4 }}>
                 <button style={{ ...S.discountBtn, ...(discountType === "pct" ? S.discountBtnActive : {}) }} onClick={() => { setDiscountType("pct"); setDiscount(0); }}>%</button>
                 <button style={{ ...S.discountBtn, ...(discountType === "fixed" ? S.discountBtnActive : {}) }} onClick={() => { setDiscountType("fixed"); setDiscount(0); }}>€</button>
@@ -560,7 +660,7 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
           {/* TOTAL */}
           <div style={S.cartTotal}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <span style={{ fontSize: 12, color: "#888" }}>TOTAL</span>
+              <span style={{ fontSize: 12, color: "#888" }}>{t.total}</span>
               {discount > 0 && <span style={{ fontSize: 11, color: "#e67e22", textDecoration: "line-through" }}>{cartTotal.toFixed(2)}€</span>}
             </div>
             <span style={S.cartTotalAmount}>
@@ -576,9 +676,9 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
           </div>
           <button style={{ ...S.validateBtn, ...(cart.length === 0 ? S.validateBtnDisabled : {}) }}
             onClick={validateOrder} disabled={cart.length === 0}>
-            ✓ ENVOYER EN CUISINE
+            {t.envoyerCuisine}
           </button>
-          <button style={S.clearBtn} onClick={() => { }}>Vider la commande</button>
+          <button style={S.clearBtn} onClick={() => { }}>{t.viderCommande}</button>
         </div>
       </div>
       {/* MODIFIER MODAL — sauce / options automatiques */}
@@ -732,7 +832,7 @@ function POSView({ menuItems, formules, cart, categories, activeCat, setActiveCa
   );
 }
 
-function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserModal, encaisserMode, setEncaisserMode, encaisserOrder, kitchenMessages, setKitchenMessages }) {
+function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserModal, encaisserMode, setEncaisserMode, encaisserOrder, kitchenMessages, setKitchenMessages, t }) {
   const tick = useTimer();
   const [modeFilter, setModeFilter] = useState("Tous");
   const prevCountRef = useRef(0);
@@ -760,13 +860,14 @@ function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserMo
   const active = modeFilter === "Tous" ? allActive : allActive.filter(o => o.mode === modeFilter);
   const done = orders.filter(o => o.status === "Terminée").slice(0, 6);
   const statusColor = { "En préparation": "#e67e22", "Prêt": "#27ae60", "Servi": "#3498db", "En route": "#a855f7" };
+  const statusLabel = { "En préparation": t.enPreparation, "Prêt": t.pret, "Servi": t.servi, "En route": t.enRoute };
   const modes = ["Tous", "Comptoir", "Table", "A emporter", "Livraison"];
 
   return (
     <div style={S.kitchenLayout}>
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, flexWrap: "wrap", gap: 8 }}>
-          <h2 style={{ ...S.sectionTitle, margin: 0 }}>🔥 En cours ({allActive.length})</h2>
+          <h2 style={{ ...S.sectionTitle, margin: 0 }}>{t.enCours} ({allActive.length})</h2>
           <div style={{ display: "flex", gap: 6 }}>
             {modes.map(m => {
               const count = m === "Tous" ? allActive.length : allActive.filter(o => o.mode === m).length;
@@ -794,7 +895,7 @@ function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserMo
               }}>
                 <div style={S.kitchenCardHeader}>
                   <span style={S.kitchenOrderId}>{order.id}</span>
-                  <span style={{ ...S.kitchenStatus, color: statusColor[order.status] }}>{order.status}</span>
+                  <span style={{ ...S.kitchenStatus, color: statusColor[order.status] }}>{statusLabel[order.status] || order.status}</span>
                   <span style={{
                     ...S.kitchenType,
                     background: order.mode === "Livraison" ? "#1a0a2a" : order.mode === "Table" ? "#0a1a2a" : "#2a2a2a",
@@ -835,23 +936,23 @@ function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserMo
                 <div style={S.kitchenActions}>
                   {order.status === "En préparation" && (
                     <button style={{ ...S.statusBtn, background: "#27ae60" }}
-                      onClick={() => updateOrderStatus(order.id, "Prêt")}>✓ Prêt</button>
+                      onClick={() => updateOrderStatus(order.id, "Prêt")}>{t.pret}</button>
                   )}
                   {order.status === "Prêt" && order.mode === "Livraison" && (
                     <button style={{ ...S.statusBtn, background: "#a855f7" }}
-                      onClick={() => updateOrderStatus(order.id, "En route")}>🛵 En route</button>
+                      onClick={() => updateOrderStatus(order.id, "En route")}>{t.enRoute}</button>
                   )}
                   {order.status === "Prêt" && order.mode !== "Livraison" && (
                     <button style={{ ...S.statusBtn, background: "#3498db" }}
-                      onClick={() => updateOrderStatus(order.id, "Servi")}>🍽️ Servi</button>
+                      onClick={() => updateOrderStatus(order.id, "Servi")}>{t.servi}</button>
                   )}
                   {(order.status === "Servi" || order.status === "En route") && (
                     <button style={{ ...S.statusBtn, background: "#8e44ad" }}
-                      onClick={() => updateOrderStatus(order.id, "Terminée")}>✓ Terminé</button>
+                      onClick={() => updateOrderStatus(order.id, "Terminée")}>{t.termine}</button>
                   )}
                   {order.status !== "Annulée" && !order.paymentMode && (
                     <button style={{ ...S.statusBtn, background: "#D4A843", color: "#111" }}
-                      onClick={() => { setEncaisserModal(order.id); setEncaisserMode("CB"); }}>💰 Encaisser</button>
+                      onClick={() => { setEncaisserModal(order.id); setEncaisserMode("CB"); }}>{t ? t.encaisser : "💰 Encaisser"}</button>
                   )}
                   {order.paymentMode && (
                     <span style={{ fontSize: 11, color: "#27ae60", padding: "6px", textAlign: "center" }}>
@@ -891,13 +992,13 @@ function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserMo
         <div style={S.variantOverlay} onClick={() => setEncaisserModal(null)}>
           <div style={{ ...S.variantModal, maxWidth: 340 }} onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 16, fontWeight: 700, color: "#D4A843", marginBottom: 16, textAlign: "center" }}>
-              💰 Encaissement
+              {t.encaissement}
             </div>
             <div style={{ fontSize: 13, color: "#888", textAlign: "center", marginBottom: 16 }}>
               Commande {encaisserModal} — Mode de paiement
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[{ k: "CB", icon: "💳", label: "Carte bancaire" }, { k: "Espèces", icon: "💵", label: "Espèces" }, { k: "Mixte", icon: "🔄", label: "Mixte CB + Espèces" }].map(p => (
+              {[{ k: "CB", icon: "💳", label: t.cb }, { k: "Espèces", icon: "💵", label: t.especes }, { k: "Mixte", icon: "🔄", label: t.mixte }].map(p => (
                 <button key={p.k} style={{
                   background: encaisserMode === p.k ? "#2c2208" : "#2a2a2a",
                   border: encaisserMode === p.k ? "2px solid #D4A843" : "1px solid #333",
@@ -922,7 +1023,7 @@ function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserMo
       )}
 
       <div>
-        <h2 style={S.sectionTitle}>✓ Terminées récentes</h2>
+        <h2 style={S.sectionTitle}>{t.termineesRecentes}</h2>
         {done.map(order => (
           <div key={order.id} style={S.kitchenDoneLine}>
             <span style={S.kitchenOrderId}>{order.id}</span>
@@ -937,7 +1038,7 @@ function KitchenView({ orders, updateOrderStatus, encaisserModal, setEncaisserMo
   );
 }
 
-function StockView({ menuItems, setMenuItems, categories, notify }) {
+function StockView({ menuItems, setMenuItems, categories, notify, t }) {
   const [restock, setRestock] = useState({});
   const [filterCat, setFilterCat] = useState("Tous");
   const filtered = filterCat === "Tous" ? menuItems : menuItems.filter(i => i.cat === filterCat);
@@ -957,7 +1058,7 @@ function StockView({ menuItems, setMenuItems, categories, notify }) {
         <div style={S.alertBanner}>⚠️ Stock bas : {lowItems.map(i => i.name).join(", ")}</div>
       )}
       <div style={S.stockHeader}>
-        <h2 style={S.sectionTitle}>📦 Gestion des Stocks</h2>
+        <h2 style={S.sectionTitle}>{t ? t.stocks : "📦 Stocks"}</h2>
         <div style={S.filterTabs}>
           {["Tous", ...categories].map(cat => (
             <button key={cat} style={{ ...S.filterTab, ...(filterCat === cat ? S.filterTabActive : {}) }}
@@ -994,7 +1095,7 @@ function StockView({ menuItems, setMenuItems, categories, notify }) {
   );
 }
 
-function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, showEndOfService, setShowEndOfService }) {
+function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, showEndOfService, setShowEndOfService, t }) {
   const sales = {};
   orders.forEach(o => o.items.forEach(i => { sales[i.name] = (sales[i.name] || 0) + i.qty; }));
   const bestSellers = Object.entries(sales).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -1015,10 +1116,10 @@ function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, sho
         </button>
       </div>
       <div style={S.kpiGrid}>
-        <div style={S.kpiCard}><span style={S.kpiLabel}>CA du jour</span><span style={S.kpiValue}>{todayCA.toFixed(2)}€</span></div>
-        <div style={S.kpiCard}><span style={S.kpiLabel}>Commandes</span><span style={S.kpiValue}>{todayOrders.length}</span></div>
-        <div style={S.kpiCard}><span style={S.kpiLabel}>Ticket moyen</span><span style={S.kpiValue}>{avgTicket.toFixed(2)}€</span></div>
-        <div style={{ ...S.kpiCard, ...(lowStock > 0 ? S.kpiCardWarn : {}) }}><span style={S.kpiLabel}>Alertes stock</span><span style={S.kpiValue}>{lowStock}</span></div>
+        <div style={S.kpiCard}><span style={S.kpiLabel}>{t ? t.caJour : "CA du jour"}</span><span style={S.kpiValue}>{todayCA.toFixed(2)}€</span></div>
+        <div style={S.kpiCard}><span style={S.kpiLabel}>{t ? t.commandes : "Commandes"}</span><span style={S.kpiValue}>{todayOrders.length}</span></div>
+        <div style={S.kpiCard}><span style={S.kpiLabel}>{t ? t.ticketMoyen : "Ticket moyen"}</span><span style={S.kpiValue}>{avgTicket.toFixed(2)}€</span></div>
+        <div style={{ ...S.kpiCard, ...(lowStock > 0 ? S.kpiCardWarn : {}) }}><span style={S.kpiLabel}>{t ? t.alertesStock : "Alertes stock"}</span><span style={S.kpiValue}>{lowStock}</span></div>
       </div>
 
       <ClotureCaisse todayOrders={todayOrders} />
@@ -1045,7 +1146,7 @@ function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, sho
               <span>{order.items.length} art.</span>
               <span style={{ fontWeight: 700 }}>{order.total.toFixed(2)}€</span>
               <span style={{ fontSize: 11 }}>{order.paymentMode === "CB" ? "💳" : order.paymentMode === "Espèces" ? "💵" : "🔄"}</span>
-              <span style={{ color: order.status === "Terminée" ? "#27ae60" : "#e67e22", fontSize: 11 }}>{order.status}</span>
+              <span style={{ color: order.status === "Terminée" ? "#27ae60" : "#e67e22", fontSize: 11 }}>{statusLabel[order.status] || order.status}</span>
             </div>
           ))}
         </div>
@@ -1098,7 +1199,7 @@ function DashboardView({ orders, todayOrders, todayCA, avgTicket, menuItems, sho
   );
 }
 
-function SettingsView({ menuItems, setMenuItems, formules, setFormules, categories, setCategories, employees, setEmployees, notify }) {
+function SettingsView({ menuItems, setMenuItems, formules, setFormules, categories, setCategories, employees, setEmployees, notify, t }) {
   const [tab, setTab] = useState("articles");
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({});
@@ -1139,10 +1240,10 @@ function SettingsView({ menuItems, setMenuItems, formules, setFormules, categori
       <div style={S.settingsHeaderRow}>
         <h2 style={S.sectionTitle}>⚙️ Menu & Prix</h2>
         <div style={{ display: "flex", gap: 8 }}>
-          <button style={{ ...S.tabSwitchBtn, ...(tab === "articles" ? S.tabSwitchActive : {}) }} onClick={() => setTab("articles")}>Articles</button>
-          <button style={{ ...S.tabSwitchBtn, ...(tab === "formules" ? S.tabSwitchActive : {}) }} onClick={() => setTab("formules")}>Formules</button>
-          <button style={{ ...S.tabSwitchBtn, ...(tab === "categories" ? S.tabSwitchActive : {}) }} onClick={() => setTab("categories")}>Catégories</button>
-          <button style={{ ...S.tabSwitchBtn, ...(tab === "employees" ? S.tabSwitchActive : {}) }} onClick={() => setTab("employees")}>👥 Équipe</button>
+          <button style={{ ...S.tabSwitchBtn, ...(tab === "articles" ? S.tabSwitchActive : {}) }} onClick={() => setTab("articles")}>{t ? t.articles : "Articles"}</button>
+          <button style={{ ...S.tabSwitchBtn, ...(tab === "formules" ? S.tabSwitchActive : {}) }} onClick={() => setTab("formules")}>{t ? t.formules : "Formules"}</button>
+          <button style={{ ...S.tabSwitchBtn, ...(tab === "categories" ? S.tabSwitchActive : {}) }} onClick={() => setTab("categories")}>{t ? t.categories : "Catégories"}</button>
+          <button style={{ ...S.tabSwitchBtn, ...(tab === "employees" ? S.tabSwitchActive : {}) }} onClick={() => setTab("employees")}>{t ? t.equipe : "👥 Équipe"}</button>
         </div>
         {tab !== "categories" && tab !== "employees" && (
           <button style={S.addItemBtn} onClick={() => tab === "articles" ? setShowAddForm(v => !v) : setShowAddFormule(v => !v)}>
@@ -1731,8 +1832,8 @@ function SysConfigView({ orders }) {
       {/* Global KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
         <div style={S.kpiCard}><span style={S.kpiLabel}>CA période</span><span style={S.kpiValue}>{totalCA.toFixed(0)}€</span></div>
-        <div style={S.kpiCard}><span style={S.kpiLabel}>Commandes</span><span style={S.kpiValue}>{periodOrders.length}</span></div>
-        <div style={S.kpiCard}><span style={S.kpiLabel}>Ticket moyen</span><span style={S.kpiValue}>{periodOrders.length ? (totalCA / periodOrders.length).toFixed(2) : "0.00"}€</span></div>
+        <div style={S.kpiCard}><span style={S.kpiLabel}>{t ? t.commandes : "Commandes"}</span><span style={S.kpiValue}>{periodOrders.length}</span></div>
+        <div style={S.kpiCard}><span style={S.kpiLabel}>{t ? t.ticketMoyen : "Ticket moyen"}</span><span style={S.kpiValue}>{periodOrders.length ? (totalCA / periodOrders.length).toFixed(2) : "0.00"}€</span></div>
       </div>
 
       {/* Employee ranking */}
@@ -1843,8 +1944,14 @@ function LoginScreen({ employees, onLogin }) {
   return (
     <div style={S.loginRoot}>
       <div style={S.loginCard}>
-        <div style={S.loginLogo}>🔥 LE COMPTOIR</div>
-        <div style={S.loginSub}>Qui êtes-vous ?</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={S.loginLogo}>🔥 LE COMPTOIR</div>
+          <button style={{ background: "transparent", border: "1px solid #333", borderRadius: 20, padding: "4px 12px", cursor: "pointer", fontSize: 18 }}
+            onClick={() => setLang(l => l === "fr" ? "es" : "fr")}>
+            {lang === "fr" ? "🇪🇸 ES" : "🇫🇷 FR"}
+          </button>
+        </div>
+        <div style={S.loginSub}>{t.loginTitle}</div>
 
         <div style={S.loginSection}>
           <label style={S.formLabel}>Choisissez votre nom</label>
@@ -1863,7 +1970,7 @@ function LoginScreen({ employees, onLogin }) {
         </div>
 
         <div style={S.loginSection}>
-          <label style={S.formLabel}>Poste du jour</label>
+          <label style={S.formLabel}>{t.loginPoste}</label>
           <div style={S.roleBtns}>
             {ROLES.map(r => (
               <button key={r} style={{ ...S.roleBtn, ...(role === r ? S.roleBtnActive : {}) }}
@@ -1876,7 +1983,7 @@ function LoginScreen({ employees, onLogin }) {
 
         <button style={{ ...S.validateBtn, marginTop: 8, opacity: name.trim() ? 1 : 0.4 }}
           onClick={() => handleLogin()} disabled={!name.trim()}>
-          → Commencer ({role})
+          {t.loginBtn} ({t.roles[role] || role})
         </button>
       </div>
     </div>
