@@ -193,7 +193,7 @@ export default function App() {
   const [notification, setNotification] = useState(null);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
-  const t = T[lang];
+  const t = T[lang] || T["es"];
   const lowStockItems = menuItems.filter(i => i.stock <= i.threshold);
   const pendingKitchen = orders.filter(o => o.status === "En préparation").length;
   const unreadMessages = kitchenMessages.filter(m => !m.read).length;
@@ -1930,7 +1930,8 @@ function SysConfigView({ orders }) {
   );
 }
 
-function LoginScreen({ employees, onLogin }) {
+function LoginScreen({ employees, lang, setLang, onLogin }) {
+  const t = T[lang] || T["es"];
   const [name, setName] = useState("");
   const [role, setRole] = useState("Caisse");
   const ROLES = ["Caisse", "Cuisine", "Service"];
@@ -2116,10 +2117,10 @@ function CategoriesManager({ categories, setCategories, menuItems, setMenuItems,
 
 function ClotureCaisse({ todayOrders }) {
   const cbTotal = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).reduce((s, o) => s + o.total, 0);
-  const cashTotal = todayOrders.filter(o => o.paymentMode === "Especes").reduce((s, o) => s + o.total, 0);
+  const cashTotal = todayOrders.filter(o => o.paymentMode === "Esp\u00e8ces" || o.paymentMode === "Especes").reduce((s, o) => s + o.total, 0);
   const mixTotal = todayOrders.filter(o => o.paymentMode === "Mixte").reduce((s, o) => s + o.total, 0);
   const cbCount = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).length;
-  const cashCount = todayOrders.filter(o => o.paymentMode === "Especes").length;
+  const cashCount = todayOrders.filter(o => o.paymentMode === "Esp\u00e8ces" || o.paymentMode === "Especes").length;
   const mixCount = todayOrders.filter(o => o.paymentMode === "Mixte").length;
   return (
     <div style={{ background: "#1e1e1e", border: "1px solid #333", borderRadius: 12, padding: "18px 20px" }}>
@@ -2183,7 +2184,7 @@ function HourlyHeatmap({ todayOrders }) {
 
 function EndOfServiceModal({ todayOrders, todayCA, onClose }) {
   const cbTotal = todayOrders.filter(o => o.paymentMode === "CB" || !o.paymentMode).reduce((s, o) => s + o.total, 0);
-  const cashTotal = todayOrders.filter(o => o.paymentMode === "Especes").reduce((s, o) => s + o.total, 0);
+  const cashTotal = todayOrders.filter(o => o.paymentMode === "Esp\u00e8ces" || o.paymentMode === "Especes").reduce((s, o) => s + o.total, 0);
   const mixTotal = todayOrders.filter(o => o.paymentMode === "Mixte").reduce((s, o) => s + o.total, 0);
   const sales = {};
   todayOrders.forEach(o => o.items.forEach(i => { sales[i.name] = (sales[i.name] || 0) + i.qty; }));
